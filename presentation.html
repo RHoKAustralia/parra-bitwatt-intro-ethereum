@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Title</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+
+      img {
+        max-width: 500px;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+
+# BitWatt: Power and the Blockchain
+
+---
+
+# Agenda
+
+1. BitCoin and Blockchains
+2. Ethereum
+3. BitWatt
+4. Ethereum as Development Platform
+5. Liam's Critical Path to an Ethereum web app...
+6. Solidity
+7. Programmable Power
+8. References
+
+
+---
+
+# BitCoin and Blockchains
+
+ - Data container: Similar to a log file or transactional database
+ - Democratic: anyone can add transactions, but must register an _Account_
+ - Transactional: Each addition of data is a _Transaction_
+ - Cryptographic: _Transactions_ is encrypted and signed
+ - Uneditable: Transaction history is inviolable (hence General Ledger)
+ - Distributed: Every _Account_ holder has a copy of the ledger
+ - Decentralised: Party A transfers X amount to Party B; Parties C, D, E etc 'witness' the transaction by mining
+
+
+---
+
+# Ethereum
+
+ - BitCoin 2.0: Part of new generation of blockchains
+ - BitCoin's Limits: _Accounts_ transfer single quantities (of BitCoin)
+ - Ethereum is agnostic of 'payload' of transactions:
+   - Could be _multiple_ quantities
+   - Could be other data: text, images, 'Happy Birthday' greeting cards
+ - These generalised transactions need a specification of their meaning
+ - Hence, the idea of 'Contracts': specifications of the semantics of arbitrary transactions
+   - Still needs witnessing, mining etc
+ - 'Ether' is the (default) currency (converible to BitCoin, AUD etc)
+
+> _Ethereum is a public blockchain platform with programmable transaction functionality. It provides a decentralized virtual machine that can execute peer-to-peer contracts using a cryptocurrency called Ether (unofficial code ETH)._ ( [Ethereum - Wikipedia, the free encyclopedia](https://en.wikipedia.org/wiki/Ethereum) )
+
+---
+
+# BitWatt
+
+ - Could we have a decentralised, secure, low-cost, automated and inviolable register of power transfers between generators and consumers?
+   - Combine Ethereum with renewable energy
+ - Multiple scenarios:
+   - Community Power
+   - Replace current grid
+   - Multi-tenant buildings
+   - Integrated with power grid vs parallel and self-contained power economy
+ - Closed loop: 'private' block chains vs. 'public' - deployed to the Ethereum main block chain
+   - 'Private' is useful for testing, proof-of-concept, costless (no 'real' ether required)
+
+
+
+---
+
+# Ethereum as Development Platform
+
+NB: Ethereum is 'early adopter' technology. Tools in state of flux!
+
+![Ethereum Components](https://camo.githubusercontent.com/90baf3a08e818cf71d30eb8be508e82a3b7342cf/687474703a2f2f646f75626c657468696e6b636f2e6769746875622e696f2f6370702d657468657265756d2d63726f73732f696d616765732f7461726765745f646570656e64656e63795f67726170682e737667)
+
+
+---
+
+# Ethereum as Development Platform
+
+ - Implementation of Ethereum protocol
+   - [go-ethereum](https://github.com/ethereum/go-ethereum)
+   - [cpp-ethereum](https://github.com/ethereum/cpp-ethereum)
+ - Ways of developing contracts
+   - [Ethereum Mix](https://github.com/ethereum/wiki/wiki/Mix:-The-DApp-IDE)
+   - [Truffle](http://truffle.readthedocs.io/en/latest/)
+ - Many, many other tools!
+   - Beware of outdated tools, docs - only use 2016 releases, preferably very recent...
+
+**Strongly recommend _go-ethereum/geth_ AND _truffle_!**
+
+---
+
+# Liam's Critical Path to an Ethereum web app...
+
+ - Install go-ethereum ( [Building Ethereum · ethereum/go-ethereum Wiki](https://github.com/ethereum/go-ethereum/wiki/Building-Ethereum) ).
+ - Setup account ( See [Managing your accounts](https://github.com/ethereum/go-ethereum/wiki/Managing-your-accounts)
+ ):
+
+```
+    geth account new
+```
+
+ - **Take note of your password and address!**
+ - Create an initial file called _genesis.json_ with the following contents ( [what this means](http://ethereum.stackexchange.com/questions/743/getting-more-ether-on-a-private-test-net) ):
+
+ ```
+     {
+       "nonce": "0x000000000000002a",
+       "timestamp": "0x0",
+       "parentHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+       "extraData": "0x0",
+       "gasLimit": "0x8000000",
+       "difficulty": "0x100",
+       "mixhash":  "0x0000000000000000000000000000000000000000000000000000000000000000",
+       "coinbase": "0x0000000000000000000000000000000000000000",
+       "alloc": {
+         "0x777494636dbffd8da89e3b26bacdfb1a191ea127": {
+             "balance": "20000000000000000000"
+         }
+       }
+     }
+```
+
+
+---
+
+# Liam's Critical Path #2
+
+ - Run:
+
+```
+    mkdir blockchain
+    geth --nodiscover --unlock <ENTER ADDRESS HERE> --genesis=genesis.json
+      --datadir="blockchain" -verbosity 4 --port 30301 --rpc --rpcport 8545
+      --rpccorsdomain "*" --mine console 2>> ethereum.log
+```
+
+or follow these instructions: [Creating a Private Chain/Testnet | Ethereum Tutorials and Tips by Hudson](https://souptacular.gitbooks.io/ethereum-tutorials-and-tips-by-hudson/content/private-chain.html)
+
+
+---
+
+# Liam's Critical Path #3
+
+ - Install truffle (requires Node.js and npm)
+
+```
+    npm i -g truffle
+```
+
+ - Create a new truffle app
+
+```
+    mkdir myapp
+    cd myapp
+    truffle init
+```
+
+ - Compile and build the default app
+
+```
+    truffle compile
+    truffle build
+```
+
+ - Deploy the app:
+
+```
+    truffle deploy
+```
+
+---
+
+# Liam's Critical Path #4
+
+ - Run the truffle server
+
+```
+    truffle serve
+```
+
+ - Open http://localhost:8080 in your browser
+
+ - To test a transction, first create a second account in _geth_, then try transferring an amount to the 2nd account address
+
+ - For quick testing, run the testrpc server instead of geth
+
+    npm i -g ethereumjs-testrpc
+    testrpc
+
+ - Then learn Solidity to write contracts!
+
+
+---
+
+ # Solidity
+
+ - Learn a new (contract) programming language!
+ - [Solidity — Solidity 0.2.0 documentation](http://solidity.readthedocs.io/en/latest/)
+ - Implement contractual variations:
+   - Fixed price watts (pegged to ether currency)
+   - Varying prices
+   - Negotiated prices
+   - Auction?
+   - Time-sensitive?
+   - Supply-sensitive?
+   - Loans & interest accrual?
+ - Good examples from BitTradeLabs:
+   - [Programmable Money](http://bittradelabs.com/blog/the-power-of-programmable-money)
+
+
+
+---
+
+# Mix
+
+ - IDE (Integrated Development Environment)
+ - Tutorial: [Mix: The DApp IDE · ethereum/wiki Wiki](https://github.com/ethereum/wiki/wiki/Mix:-The-DApp-IDE)
+ - Very powerful, hard to get working web application...
+
+
+---
+
+# Programmable Power
+
+ - That's great, but where's the power?
+ - 2 x lamps, 2 x Efergy monitors
+ - These **should** log consumption that can be downloaded as a spreadsheet
+ - Can be fed in to Ethereum app as _BitWatt_ debits, e.g. 2 "net consumer" accounts. Need also 2 x "net generator" accounts.
+   - (Exercise best left for the reader)
+
+
+---
+
+# References
+
+## Docs
+
+ - [Ethereum Homestead Documentation — Ethereum Homestead 0.1 documentation](http://www.ethdocs.org/en/latest/)
+ - [orgs/ethereum/rooms - Gitter](https://gitter.im/orgs/ethereum/rooms)
+ - [Ethereum Community Forum](https://forum.ethereum.org/)
+ - [Introduction | Ethereum Guide](https://gavofyork.gitbooks.io/turboethereum/content/)
+
+
+
+## Core Tools
+
+ - [Install the Command Line Tools](https://www.ethereum.org/cli)
+ - [Mix: The DApp IDE · ethereum/wiki Wiki](https://github.com/ethereum/wiki/wiki/Mix:-The-DApp-IDE)
+ - [ethereum/mist: Mist browser](https://github.com/ethereum/mist)
+ - [Releases · ethereum/mix](https://github.com/ethereum/mix/releases)
+ - [Releases · ethereum/webthree-umbrella](https://github.com/ethereum/webthree-umbrella/releases)
+
+---
+
+# References #2
+
+## Private Chains
+
+ - [Setting up private network or local cluster · ethereum/go-ethereum Wiki](https://github.com/ethereum/go-ethereum/wiki/Setting-up-private-network-or-local-cluster)
+ - [Creating a Private Chain/Testnet | Ethereum Tutorials and Tips by Hudson](https://souptacular.gitbooks.io/ethereum-tutorials-and-tips-by-hudson/content/private-chain.html)
+
+
+
+## Truffle
+
+ - [A 101 Noob Intro to Programming Smart Contracts on Ethereum — Medium](https://medium.com/@ConsenSys/a-101-noob-intro-to-programming-smart-contracts-on-ethereum-695d15c1dab4#.29v2o7fx8)
+ - [Truffle](http://truffle.readthedocs.io/en/latest/)
+ - [ConsenSys/truffle: A development framework for Ethereum](https://github.com/ConsenSys/truffle)
+ - [ethereumjs/testrpc: Fast Ethereum RPC client for testing and development](https://github.com/ethereumjs/testrpc)
+   - [ethereumjs-testrpc](https://www.npmjs.com/package/ethereumjs-testrpc)
+ - [iurimatias/EtherSim: EtherSim is an Ethereum RPC simulator for testing and development purposes](https://github.com/iurimatias/EtherSim)
+
+
+---
+
+# References #3
+
+
+## Metamask
+
+ - [MetaMask](https://metamask.io/) (untested but promising)
+
+## Other
+
+- [PowerAPI](http://powerapi.org/)
+- [Spirals-Team/powerapi: PowerAPI is a middleware toolkit for building software-defined power meters](https://github.com/Spirals-Team/powerapi)
+- [BitWatts](http://bitwatts.powerapi.org/)
+
+    </textarea>
+    <script src="https://gnab.github.io/remark/downloads/remark-latest.min.js">
+    </script>
+    <script>
+      var slideshow = remark.create();
+    </script>
+  </body>
+</html>
